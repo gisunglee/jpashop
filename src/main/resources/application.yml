@@ -10,8 +10,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
-#      ddl-auto: validator update create create-drop
+       ddl-auto: none
+#      ddl-auto: validator update create create-drop none
     properties:
       hibernate:
 #        show_sql: true

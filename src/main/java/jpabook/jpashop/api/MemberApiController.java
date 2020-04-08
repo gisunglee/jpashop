@@ -3,19 +3,50 @@ package jpabook.jpashop.api;
 
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    @GetMapping("/api/v1/members")
+    public List<Member> memberV1(){
+        return memberService.findMembers();
+    }
+
+    @GetMapping("/api/v2/members")
+    public Result memberV2(){
+        List<Member> findMembers =  memberService.findMembers();
+        List<MemberDto> collect = findMembers.stream()
+                .map(member -> new MemberDto(member.getName()))
+                .collect(Collectors.toList());
+
+        return new Result(collect);
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T>{
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto{
+        private String name;
+    }
+
 
     /**
      * Entity 를 바로 받는 경우! 나중에 망함! Member는 Entity 라 가끔 변경되는데 Call 하는 곳에서 바로 오류남
@@ -44,9 +75,14 @@ public class MemberApiController {
     }
 
 
+
     @Data
     static class CreateMemberRequest{
+        @NotEmpty
         private String name;
+
+        public CreateMemberRequest() {
+        }
 
         public CreateMemberRequest(String name){
             this.name = name;
@@ -60,6 +96,34 @@ public class MemberApiController {
         public CreateMemberResponse(Long id){
             this.id = id;
         }
+    }
+
+    @PutMapping("/api/v2/members/{id}")
+    public UpdateMemberResponse updateMemberV2(
+        @PathVariable("id") Long id,
+        @RequestBody @Valid UpdateMemberRequest request
+    ){
+        memberService.update(id, request.getName());
+        Member findMember = memberService.findOne(id);
+
+        return new UpdateMemberResponse(findMember.getId(), findMember.getName());
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class UpdateMemberRequest {
+        private String name;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class UpdateMemberResponse {
+
+        public UpdateMemberResponse() {}
+
+        private Long id;
+        private String name;
     }
 
 }
