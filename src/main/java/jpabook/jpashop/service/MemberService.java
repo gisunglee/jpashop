@@ -37,7 +37,7 @@ public class MemberService {
         validateDeplicateMember(member); // 중복 회원 검증
         memberRepository.save(member);
         return member.getId();
-    }
+}
 
     private void validateDeplicateMember(Member member) {
         List<Member> findMembers = memberRepository.findByName(member.getName());

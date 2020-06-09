@@ -78,10 +78,10 @@ public class ItemController {
 //    }
     // 위에 보다는 아래 같은 스타일을 권장 한다고 함
     @PostMapping("/items/{itemId}/edit")
-    public String updateItem(@PathVariable Long itemId, @ModelAttribute("form") BookForm form){
+        public String updateItem(@PathVariable Long itemId, @ModelAttribute("form") BookForm form){
 
-        itemService.updateItem(itemId, form.getName(), form.getPrice(), form.getStockQuantity());
-        return "redirect:/items";
+            itemService.updateItem(itemId, form.getName(), form.getPrice(), form.getStockQuantity());
+            return "redirect:/items";
     }
 
 }
